@@ -1,0 +1,22 @@
+#!/bin/bash
+
+title=$1
+msg=$2
+
+# TOKEN=bot toekn API key
+# CHAT_ID=Identifier
+source /home/nico/.config/telegram/credentials
+URL="https://api.telegram.org/bot$TOKEN"
+
+sendTelegram() {
+        curl -s \
+        -X POST \
+        "$URL/sendMessage" \
+        --data-urlencode text="$MESSAGE" \
+        -d parse_mode=Markdown \
+        -d chat_id=$CHAT_ID \
+        -o /dev/null
+}
+
+MESSAGE=$(echo -e "*[ $title ]*\n$msg")
+sendTelegram

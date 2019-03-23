@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+#  This script sends whatever is piped to it as a message to the specified Telegram bot
+#
+content=$( cat )
+
+# TOKEN=bot toekn API key
+# CHAT_ID=Identifier
+source /home/nico/.config/telegram/credentials
+URL="https://api.telegram.org/bot$TOKEN"
+
+sendTelegram() {
+        curl -s \
+        -X POST \
+        "$URL/sendMessage" \
+        --data-urlencode text="$MESSAGE" \
+        -d parse_mode=Markdown \
+        -d chat_id=$CHAT_ID \
+        -o /dev/null
+}
+
+sendTelegramD() {
+        curl -s \
+        -X POST \
+        "$URL/sendMessage" \
+        --data-urlencode text="$MESSAGE" \
+        -d parse_mode=Markdown \
+        -d chat_id=$CHAT_ID
+}
+
+
+# Adding title
+if [ -n "$1" ]; then
+	MESSAGE=$(echo -e "*[ RasPi - $1 ]*\n\n$content")
+else
+	MESSAGE=$(echo -e "*[ RasPi ]*\n\n$content")
+fi
+
+# Checking message size limit
+if [ ${#MESSAGE} -gt 4096 ];then
+	MESSAGE=${MESSAGE:0:2000}"..."
+fi
+
+# sending
+if  [[ -z "$MESSAGE" ]]; then
+        echo "Please pipe a message to me!"
+else
+        sendTelegram
+fi
